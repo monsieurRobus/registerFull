@@ -1,0 +1,4 @@
+registerFront/node_modules
+registerFront/.env
+
+registerBack/.env
