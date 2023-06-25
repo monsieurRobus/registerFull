@@ -1,6 +1,7 @@
 registerFront/node_modules
 registerFront/.env
 
+registerBack/node_modules
 registerBack/.env
 
 .gitignore
