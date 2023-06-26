@@ -1,23 +1,17 @@
-const { MongoClient, ServerApiVersion } = require('mongodb')
+const mongoose = require('mongoose')
 const uri = process.env.CONNECT
 
-const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
-  });
+
 
   const run = async () => {
 
     try  {
-        await client.connect();
-        await client.db("admin").command({ ping: 1 })
+        const db = await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
         console.log("Connected successfully to database");
     }
     catch (e) {
+      console.error(e)
     }
   }
 
-  module.exports = { run, client }
+  module.exports = { run }
