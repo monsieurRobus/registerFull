@@ -11,7 +11,21 @@ const RegisterForm = () => {
     
     const onFormSubmit = (values) => {}
 
-    const onFormErrors = (errors) => {}
+    const onFormErrors = (errors) => {
+
+      const errorFields = document.querySelectorAll(".error")
+
+        for(const errorField of errorFields) {
+            errorField.classList.remove("error")
+        }
+    
+        for(const error in errors) {
+            console.log(errors[error].ref)
+            errors[error].ref.classList.add("error")
+        }
+
+
+    }
 
     const handleLogin = () => {
 
