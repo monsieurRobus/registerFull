@@ -1,4 +1,5 @@
 import React from 'react'
+import Swal from 'sweetalert2'
 import { useForm } from 'react-hook-form'
 import './RegisterForm.css'
 import { useNavigate } from 'react-router-dom'
@@ -9,26 +10,33 @@ const RegisterForm = () => {
     const { register, handleSubmit, errors } = useForm()
     const navigate = useNavigate()
     
-    const onFormSubmit = (values) => {}
+    const onFormSubmit = (values) => {
+      Swal.fire(
+        {
+          title:'Test!',
+          text: 'Esto es un test de sweetalert2',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        }
+      )
+    }
 
     const onFormErrors = (errors) => {
 
       const errorFields = document.querySelectorAll(".error")
 
+      console.log(errors)
         for(const errorField of errorFields) {
             errorField.classList.remove("error")
         }
     
         for(const error in errors) {
-            console.log(errors[error].ref)
+            console.log(errors)
             errors[error].ref.classList.add("error")
         }
-
-
     }
 
     const handleLogin = () => {
-
       navigate("/")
     }
 
@@ -83,7 +91,7 @@ const RegisterForm = () => {
                 
                 
 
-                <button type="submit">Register</button>
+                <button type="submit" >Register</button>
             </form>
             <button onClick={handleLogin} >Login!</button>
         </section>

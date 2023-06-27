@@ -1,16 +1,23 @@
 import React from 'react'
+
 import { useForm } from 'react-hook-form'
 import './LoginForm.css'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 const LoginForm = () => {
 
     const { register, handleSubmit, errors } = useForm()
     const navigate = useNavigate()
     const onFormSubmit = (values) => {
-
        
-       login(values.username, values.password)
+        //    login(values.username, values.password)
+        Swal.fire({
+            title: 'Login',
+            text: 'Login correcto',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+        })
 
     }
 
