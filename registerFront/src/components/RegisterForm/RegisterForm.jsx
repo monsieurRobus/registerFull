@@ -1,25 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { useForm } from 'react-hook-form'
 import './RegisterForm.css'
 import { useNavigate } from 'react-router-dom'
+import { registerUser } from '../../services/user.service'
+import { useSwal } from '../../hooks/useSwal'
 
 
 const RegisterForm = () => {
 
     const { register, handleSubmit, errors } = useForm()
+    const [res, setRes] = useState({})
+    const [registerOk, setRegisterOk] = useState(false)
+    const [registerError, setRegisterError] = useState(false)
     const navigate = useNavigate()
     
-    const onFormSubmit = (values) => {
-      Swal.fire(
-        {
-          title:'Test!',
-          text: 'Esto es un test de sweetalert2',
-          icon: 'success',
-          confirmButtonText: 'Aceptar'
-        }
-      )
+    const onFormSubmit = async (values) => {
+      const valuesToSend =
+      {
+        name: values.username,
+        password: values.password,
+        email: values.email
+      }
+    setRes(await registerUser(valuesToSend))
+    
+
+
     }
+
+    useEffect(() => {
+      console.log(res)
+      useSwal(res, setRegisterOk, setRes)
+    }, [res])
 
     const onFormErrors = (errors) => {
 
@@ -46,7 +58,7 @@ const RegisterForm = () => {
             <form onSubmit={handleSubmit(onFormSubmit, onFormErrors)}>
                 <div>                  
                   <label>Username</label>
-                  <input type="text" name="username" {...register("username", {
+                  <input type="text" name="name" {...register("username", {
                     required: true,
                     minLength: 3,
                 })} />

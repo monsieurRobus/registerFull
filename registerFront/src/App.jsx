@@ -9,11 +9,6 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 
 function App() {
-  useEffect(() => {
-
-    console.log("componente montado uwu")
-
-  }, [])
 
   return (
     <Routes>
