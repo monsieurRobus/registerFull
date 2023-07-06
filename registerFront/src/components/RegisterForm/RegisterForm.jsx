@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { useForm } from 'react-hook-form'
 import './RegisterForm.css'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { registerUser } from '../../services/user.service'
-import { useSwal } from '../../hooks/useSwal'
+import { useAuth } from '../../hooks/AuthContext'
+import { useRegisterError } from '../../hooks/useRegisterError'
+
 
 
 const RegisterForm = () => {
 
     const { register, handleSubmit, errors } = useForm()
+    const { allUser, setAllUser, bridgeData } = useAuth()
     const [res, setRes] = useState({})
+    const [send, setSend] = useState(false)
     const [registerOk, setRegisterOk] = useState(false)
-    const [registerError, setRegisterError] = useState(false)
+    const [registerError, setRegisterError] = useState(false)    
+
     const navigate = useNavigate()
     
     const onFormSubmit = async (values) => {
@@ -22,15 +27,18 @@ const RegisterForm = () => {
         password: values.password,
         email: values.email
       }
+    
+    setSend(true)
     setRes(await registerUser(valuesToSend))
+    setSend(false)
     
 
 
     }
 
     useEffect(() => {
-      console.log(res)
-      useSwal(res, setRegisterOk, setRes)
+      useRegisterError(res, setRegisterOk, setRes, setAllUser)
+      if (res?.status == 200) bridgeData("ALLUSER")
     }, [res])
 
     const onFormErrors = (errors) => {
@@ -46,6 +54,10 @@ const RegisterForm = () => {
             console.log(errors)
             errors[error].ref.classList.add("error")
         }
+    }
+
+    if(registerOk) {
+      return <Navigate to="/verifyCode" />
     }
 
     const handleLogin = () => {
@@ -103,7 +115,12 @@ const RegisterForm = () => {
                 
                 
 
-                <button type="submit" >Register</button>
+                <button 
+                  type="submit"
+                  disabled={send}                 
+                >
+                
+                Register</button>
             </form>
             <button onClick={handleLogin} >Login!</button>
         </section>

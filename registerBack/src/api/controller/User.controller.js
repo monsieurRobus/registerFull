@@ -55,6 +55,16 @@ const registerUser = async (req, res, next) => {
 
         const { name, email, password, role } = req.body
         
+        const emailCode = process.env.EMAIL
+        const passwordCode = process.env.PASSWORD_EMAIL
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: emailCode,
+                pass: passwordCode
+            }
+        })
+
         const confirmation = confirmationCode()
 
         const userExists = await User.findOne({email: email })
@@ -62,6 +72,21 @@ const registerUser = async (req, res, next) => {
         if (!userExists) {
             const userToAdd = new User({ name, email, password, role, confirmation })
             const userAdded = await userToAdd.save()
+
+            const mailOptions = {
+                from: emailCode,
+                to: email,
+                subject: `This is your confirmation code for ${process.env.APP_NAME}`,
+                html: `<h1>This is your confirmation code for  ${process.env.APP_NAME}</h1><h2>${confirmation}</h2>`
+            }
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              })
 
             if (userAdded)
             {
@@ -87,16 +112,17 @@ const registerUser = async (req, res, next) => {
 const activateUser = async (req, res, next) => {
 
     try {
-        const { id, code } = req.body
+        const { email, confirmationCode } = req.body
 
-        const userToActivate = await User.findById(id)
+        const userToActivate = await User.findOne({email: email})
 
         if(userToActivate)
         {
             if(!userToActivate.active)
             {
-                (userToActivate.confirmation === code) ? userToActivate.active = true : userToActivate.active = false
+                userToActivate.active = (parseInt(userToActivate.confirmation) === confirmationCode) ? true : false
                 const userActivated = await userToActivate.save()
+                console.log(parseInt(userToActivate.confirmation) === confirmationCode)
                 if(userActivated)
                 {                    
                     return res.status(200).json({ message: 'User activated successfully', user: userToActivate })
@@ -114,7 +140,7 @@ const activateUser = async (req, res, next) => {
         }
         else
         {
-            return res(404).json({ message: 'User not found' })
+            return res.status(404).json({ message: 'User not found' })
         }
 
     }

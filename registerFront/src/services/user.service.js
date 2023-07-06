@@ -6,3 +6,9 @@ export const registerUser = async (formData) => {
     .then((res) => res)
     .catch((err) => err)
 }
+
+export const checkCodeConfirmationUser = async (formData) => {
+    return APIuser.patch("/user/activate", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  }
