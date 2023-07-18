@@ -1,7 +1,8 @@
 const User = require('../models/User.model')
 const { confirmationCode } = require('../../utils/confirmationCode')
+const { generateToken } = require('../../utils/token')
 const nodemailer = require('nodemailer')
-
+const bcrypt = require('bcrypt')
 const PORT = process.env.PORT || 3000
 const ENDPOINT = process.env.ENDPOINT || `http://localhost:${PORT}`
 const EMAIL = process.env.EMAIL || ''
@@ -115,13 +116,13 @@ const loginUser = async (req, res, next) => {
 
       if (!user) {
         return res.status(404).json('User not found')
+        
       } else {
-
-    
+        
         if (bcrypt.compareSync(password, user.password)) {
-
+            
           const token = generateToken(user._id, email);
-
+            
           return res.status(200).json({
             user: {
               email,
@@ -130,13 +131,12 @@ const loginUser = async (req, res, next) => {
             token,
           });
         } else {
-
-          return res.status(404).json('Invalid password');
+            return res.status(404).json('Invalid password');
         }
       }
     } catch (error) {
       return next(
-        setError(500 || error.code, 'Server error' || error.message)
+        error.message
       );
     }
   };
@@ -149,6 +149,7 @@ const activateUser = async (req, res, next) => {
         const { email, confirmationCode } = req.body
 
         const userToActivate = await User.findOne({email: email})
+        delete userToActivate.password
 
         if(userToActivate)
         {
@@ -156,7 +157,6 @@ const activateUser = async (req, res, next) => {
             {
                 userToActivate.active = (parseInt(userToActivate.confirmation) === confirmationCode) ? true : false
                 const userActivated = await userToActivate.save()
-                console.log(parseInt(userToActivate.confirmation) === confirmationCode)
                 if(userActivated)
                 {                    
                     return res.status(200).json({ message: 'User activated successfully', user: userToActivate })

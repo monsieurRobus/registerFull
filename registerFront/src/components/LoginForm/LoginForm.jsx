@@ -1,25 +1,36 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 import './LoginForm.css'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { loginUser } from '../../services/user.service'
+import useLoginError from '../../hooks/useLoginError'
 
 const LoginForm = () => {
-
+    const [send, setSend] = useState(false)
+    const [res, setRes] = useState({})
+    const [ok, setOk] = useState(false)
     const { register, handleSubmit, errors } = useForm()
     const navigate = useNavigate()
-    const onFormSubmit = (values) => {
-       
-        //    login(values.username, values.password)
-        Swal.fire({
-            title: 'Login',
-            text: 'Login correcto',
-            icon: 'success',
-            confirmButtonText: 'Aceptar'
-        })
+    const onFormSubmit = async (values) => {
+        const valuesToSend = {
+            email: values.username,
+            password: values.password
+        }
+        
+        setSend(true)
+        setRes(await loginUser(valuesToSend))
+        setSend(false)
+
 
     }
+
+    useEffect(() => {
+
+        useLoginError(res, setOk, setRes, setSend)
+
+    },[res])
 
     const onFormErrors = (errors) => {
 
@@ -30,7 +41,6 @@ const LoginForm = () => {
         }
     
         for(const error in errors) {
-            console.log(errors[error].ref)
             errors[error].ref.classList.add("error")
         }
     }
@@ -69,7 +79,7 @@ const LoginForm = () => {
             <button type="submit">Login</button>
            
         </form>
-        <button onClick={handleRegister}>Register</button>
+        <button disabled={send} onClick={handleRegister}>Register</button>
     </section>
   )
 }
