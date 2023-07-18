@@ -5,9 +5,13 @@ export const useRegisterError = (res, setRegisterOk, setRes, setAllUser) => {
   // 200: User registered
   if (res?.status == 200)
   {
-    const dataToString = JSON.stringify(res.data.user.email)
-    console.log(dataToString)
-    localStorage.setItem('email', dataToString)
+    const dataToStorage = {
+      ...res.data.user,
+      confirmation: "*********"
+    }
+    const dataToString = JSON.stringify(dataToStorage)
+    
+    localStorage.setItem('user', dataToString)
 
     setRegisterOk(()=> true)
     Swal.fire({
@@ -18,7 +22,6 @@ export const useRegisterError = (res, setRegisterOk, setRes, setAllUser) => {
       });
       setRes({});
   }
-  console.log(res)
   // 409: Usuario ya registrado
   if (res?.response?.data?.message.includes("User already exist")) {
     Swal.fire({

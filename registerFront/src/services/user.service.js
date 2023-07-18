@@ -12,3 +12,15 @@ export const checkCodeConfirmationUser = async (formData) => {
       .then((res) => res)
       .catch((error) => error);
   }
+
+  export const loginUser = async (formData) => {
+    return APIuser.post("/user/login", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  };
+
+  export const autoLoginUser = async (formData) => {
+    return APIuser.post("/user/login/autologin", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  };

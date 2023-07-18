@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/AuthContext'
 import { useForm } from 'react-hook-form'
 import { Navigate } from 'react-router-dom'
 import { checkCodeConfirmationUser } from '../../services/user.service'
+import { useCheckCodeError } from '../../hooks/useCheckCodeError'
 
 
 export const ConfirmationCode = () => {
@@ -11,14 +12,14 @@ export const ConfirmationCode = () => {
     const [ok, setOk] = useState(false)
     const [reloadPageError, setReloadPageError] = useState(false)
     const [deleteUser, setDeleteUser] = useState(false)
-    const { allUser, userLogin, setUser, user } = useAuth()
+    const { allUser, userLogin, setUser, user, bridgeData } = useAuth()
     const { register, handleSubmit, errors } = useForm()
     
     const onFormSubmit = async (values) => {
 
-        const email = localStorage.getItem('email')
+        const user = localStorage.getItem('user')
 
-        if (email == null){
+        if (user == null){
 
             const customFormData = {
                 email: allUser.data.user.email,
@@ -32,7 +33,7 @@ export const ConfirmationCode = () => {
 
     else 
     {
-        const emailToCheck = JSON.parse(email)
+        const emailToCheck = JSON.parse(user).email
         const customFormData = {
             email: emailToCheck,
             confirmationCode: parseInt(values.confirmationCode),
@@ -48,11 +49,30 @@ export const ConfirmationCode = () => {
 
 useEffect(() => {
 
-    
-
-
+  useCheckCodeError(
+    res,
+    setDeleteUser,
+    setOk,
+    setUser,
+    setReloadPageError,
+    setRes
+  );
 }, [res])
 
+if(ok) {
+  if(!localStorage.getItem('user')){
+
+  return <Navigate to="/login" />
+  }
+  else 
+  {
+    return <Navigate to="/dashboard" />
+  }
+}
+
+if(reloadPageError){
+  return <Navigate to="/login" />
+}
   return (
     <div>
         <h1>Verify your code</h1>

@@ -52,8 +52,6 @@ const getUserById = async (req, res, next) => {
 const registerUser = async (req, res, next) => {
 
     try {
-
-        const { name, email, password, role } = req.body
         
         const emailCode = process.env.EMAIL
         const passwordCode = process.env.PASSWORD_EMAIL
@@ -66,7 +64,7 @@ const registerUser = async (req, res, next) => {
         })
 
         const confirmation = confirmationCode()
-
+        const { name, email, password, role } = req.body
         const userExists = await User.findOne({email: email })
 
         if (!userExists) {
@@ -109,6 +107,42 @@ const registerUser = async (req, res, next) => {
 
 }
 
+const loginUser = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+  
+      const user = await User.findOne({ email })
+
+      if (!user) {
+        return res.status(404).json('User not found')
+      } else {
+
+    
+        if (bcrypt.compareSync(password, user.password)) {
+
+          const token = generateToken(user._id, email);
+
+          return res.status(200).json({
+            user: {
+              email,
+              _id: user._id,
+            },
+            token,
+          });
+        } else {
+
+          return res.status(404).json('Invalid password');
+        }
+      }
+    } catch (error) {
+      return next(
+        setError(500 || error.code, 'Server error' || error.message)
+      );
+    }
+  };
+
+
+  
 const activateUser = async (req, res, next) => {
 
     try {
@@ -185,4 +219,5 @@ module.exports = {
     getUserById,
     activateUser,
     registerUser,
-    deleteUser }
+    deleteUser,
+    loginUser }

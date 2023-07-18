@@ -32,8 +32,6 @@ const RegisterForm = () => {
     setRes(await registerUser(valuesToSend))
     setSend(false)
     
-
-
     }
 
     useEffect(() => {
