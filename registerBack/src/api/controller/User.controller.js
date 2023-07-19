@@ -125,8 +125,11 @@ const loginUser = async (req, res, next) => {
             
           return res.status(200).json({
             user: {
-              email,
-              _id: user._id,
+                
+                username: user.name,
+                email,
+                _id: user._id,
+                active: user.active,
             },
             token,
           });

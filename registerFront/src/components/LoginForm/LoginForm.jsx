@@ -6,6 +6,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { loginUser } from '../../services/user.service'
 import useLoginError from '../../hooks/useLoginError'
+import { useAuth } from '../../hooks/AuthContext'
 
 const LoginForm = () => {
     const [send, setSend] = useState(false)
@@ -13,6 +14,7 @@ const LoginForm = () => {
     const [ok, setOk] = useState(false)
     const { register, handleSubmit, errors } = useForm()
     const navigate = useNavigate()
+    const {setUser} = useAuth()
     const onFormSubmit = async (values) => {
         const valuesToSend = {
             email: values.username,
@@ -25,12 +27,30 @@ const LoginForm = () => {
 
 
     }
+    
+    useEffect(() => {
+        setUser(()=>null)
+    }, 
+    [])
 
     useEffect(() => {
 
         useLoginError(res, setOk, setRes, setSend)
+        
 
     },[res])
+
+    if(ok)
+        {
+            if(res.data.user.active)
+            {
+                return <Navigate to="/home" />
+            }
+            else
+            {
+                return <Navigate to="/verifyCode" />
+            }
+        }
 
     const onFormErrors = (errors) => {
 
@@ -53,8 +73,8 @@ const LoginForm = () => {
     <section>        
         <form onSubmit={handleSubmit(onFormSubmit, onFormErrors)}>
             <div>
-                <label>Username</label>
-                <input type="text" name="username" {...register("username", {
+                <label>Email</label>
+                <input type="text" name="email" {...register("username", {
                     required: true,
                     minLength: 3,
                 })} />

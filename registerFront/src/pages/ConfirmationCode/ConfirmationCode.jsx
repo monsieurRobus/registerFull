@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { Navigate } from 'react-router-dom'
 import { checkCodeConfirmationUser } from '../../services/user.service'
 import { useCheckCodeError } from '../../hooks/useCheckCodeError'
+import {useAutoLogin } from '../../hooks/useAutoLogin'
+
 
 
 export const ConfirmationCode = () => {
@@ -61,7 +63,8 @@ useEffect(() => {
 
 if(ok) {
   if(!localStorage.getItem('user')){
-
+    setOk(()=>false)
+    useAutoLogin(allUser, userLogin, setOk)
   return <Navigate to="/login" />
   }
   else 
