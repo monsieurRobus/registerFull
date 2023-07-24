@@ -26,11 +26,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <ProtectedCheckChildren>
               <ConfirmationCode />
             </ProtectedCheckChildren> } />
-          {/* <Route path="/profile" element={ <Profile /> } /> */}
-          <Route path="/dashboard" element={ <Dashboard /> } />
-          {/* <Route path="/holamundo" element={ <ProtectedRoute/> } >
-            <Route path="" element={<h1>hola mundo</h1>} />
-          </Route> */}
+          <Route path="/dashboard" element={ 
+            <ProtectedRoute>
+              <h1>Holo</h1>  
+            </ProtectedRoute> 
+            } />
         </Route>
       </Routes>        
       </AuthContextProvider>

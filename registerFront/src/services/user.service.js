@@ -17,10 +17,16 @@ export const checkCodeConfirmationUser = async (formData) => {
     return APIuser.post("/user/login", formData)
       .then((res) => res)
       .catch((error) => error);
-  };
+  }
 
   export const autoLoginUser = async (formData) => {
-    return APIuser.post("/user/login/autologin", formData)
+    return APIuser.post("/user/autologin", formData)
       .then((res) => res)
       .catch((error) => error);
-  };
+  }
+
+  export const resendCodeConfirmationUser = async (formData)=> {
+    return APIuser.post("/user/resend", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  }

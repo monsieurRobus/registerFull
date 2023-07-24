@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom'
 import { checkCodeConfirmationUser } from '../../services/user.service'
 import { useCheckCodeError } from '../../hooks/useCheckCodeError'
 import {useAutoLogin } from '../../hooks/useAutoLogin'
-
+import ButtonResend from '../../components/ButtonResend/ButtonResend'
 
 
 export const ConfirmationCode = () => {
@@ -87,6 +87,7 @@ if(reloadPageError){
             </label>
             <button type="submit" disabled={send}>Verify Code</button>
         </form>
+        <h3>Didn't receive your code?</h3><ButtonResend />
     </div>
   )
 }

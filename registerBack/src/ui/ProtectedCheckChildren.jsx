@@ -8,9 +8,23 @@ const ProtectedCheckChildren = ({children}) => {
     if (userParse == null ){
         return <Navigate to="/login" />
     }
-  return (
-    children
-  )
+    else 
+    {
+      if (userParse.active){
+          return <Navigate to="/dashboard" />
+      }
+
+      else 
+      { 
+        return (
+          children
+        )
+      }
+  }
+
+       
+    
+  
 }
 
 export default ProtectedCheckChildren

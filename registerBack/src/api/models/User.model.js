@@ -38,10 +38,11 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre('save', async function(next) {
 
     try {
-        console.log(this.password)
-        this.password = await bcrypt.hash(this.password, 10)
-        console.log(`Esta es la pass:${this.password}`)
-        next()
+        if(this.isNew)
+            {
+                this.password = await bcrypt.hash(this.password, 10)
+                next()
+            }
     }
     catch(error)
     {

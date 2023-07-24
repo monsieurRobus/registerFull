@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt')
 const PORT = process.env.PORT || 3000
 const ENDPOINT = process.env.ENDPOINT || `http://localhost:${PORT}`
 const EMAIL = process.env.EMAIL || ''
-const PASSWORD = process.env.PASSWORD || ''
+const PASSWORD = process.env.PASSWORD_EMAIL || ''
 const HOST = process.env.HOST || 'localhost'
 const PROTOCOL = process.env.PROTOCOL || 'http://'
 
@@ -50,17 +50,56 @@ const getUserById = async (req, res, next) => {
 
 }
 
+const resendCode = async (req, res, next) => {
+    try {
+
+      // NodeMailer Config
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: EMAIL,
+          pass: PASSWORD,
+        },
+      });
+
+      // User Exists?
+      const userExists = await User.findOne({ email: req.body.email });
+  
+      if (userExists) {
+        const mailOptions = {
+          from: EMAIL,
+          to: req.body.email,
+          subject: 'Confirmation code ',
+          html: `<h1>Register FUll</h1><h2>This is yout code! <span style="color: #ed6d6b;">${userExists.confirmation}</span>`,
+        };
+  
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+            return res.status(200).json({
+              resend: true,
+            });
+          }
+        });
+      } else {
+        return res.status(404).json('User does not exist :(');
+      }
+    } catch (error) {
+      return next(setError(500, error.message || 'General error sending code'));
+    }
+  };
+
 const registerUser = async (req, res, next) => {
 
     try {
         
-        const emailCode = process.env.EMAIL
-        const passwordCode = process.env.PASSWORD_EMAIL
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: emailCode,
-                pass: passwordCode
+                user: EMAIL,
+                pass: PASSWORD
             }
         })
 
@@ -223,4 +262,5 @@ module.exports = {
     activateUser,
     registerUser,
     deleteUser,
-    loginUser }
+    loginUser,
+    resendCode }
