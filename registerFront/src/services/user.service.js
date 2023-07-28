@@ -24,6 +24,22 @@ export const checkCodeConfirmationUser = async (formData) => {
       .then((res) => res)
       .catch((error) => error);
   }
+  export const changePassword = async (formData) => {
+    const id = formData.id;
+    const values = {
+      password: formData.password,
+      newPassword: formData.newPassword
+    }
+    return APIuser.post(`/user/changePassword/${id}`, values)
+      .then((res) => res)
+      .catch((error) => error);
+  }
+
+  export const forgotPassword = async (formData) => {
+    return APIuser.post("/user/forgotpassword/send", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  }
 
   export const resendCodeConfirmationUser = async (formData)=> {
     return APIuser.post("/user/resend", formData)

@@ -3,6 +3,7 @@ const { confirmationCode } = require('../../utils/confirmationCode')
 const { generateToken } = require('../../utils/token')
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
+const randomPassword = require('../../utils/randomPassword')
 const PORT = process.env.PORT || 3000
 const ENDPOINT = process.env.ENDPOINT || `http://localhost:${PORT}`
 const EMAIL = process.env.EMAIL || ''
@@ -29,8 +30,8 @@ const getAllUsers = async (req, res, next) => {
 const getUserById = async (req, res, next) => {
 
     try {
-        const { id } = req.params
 
+        const { id } = req.params
         const userFound = await User.findById(id)
 
         if (userFound) {
@@ -64,7 +65,7 @@ const resendCode = async (req, res, next) => {
 
       // User Exists?
       const userExists = await User.findOne({ email: req.body.email });
-  
+      
       if (userExists) {
         const mailOptions = {
           from: EMAIL,
@@ -256,6 +257,226 @@ const deleteUser = async (req, res, next) => {
 
 }
 
+const modifyPassword = async (req, res, next) => {
+
+  // Modify password if logged
+  try {
+    const { password, newPassword } = req.body;
+
+    const { _id } = req.user;
+    if (bcrypt.compareSync(password, req.user.password)) {
+      const newPasswordHash = bcrypt.hashSync(newPassword, 10);
+      try {
+        await User.findByIdAndUpdate(_id, { password: newPasswordHash });
+
+        const updateUser = await User.findById(_id);
+
+        if (bcrypt.compareSync(newPassword, updateUser.password)) {
+          return res.status(200).json({
+            updateUser: true,
+          });
+        } else {
+          return res.status(404).json({
+            updateUser: false,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json(error.message);
+      }
+    } else {
+      return res.status(404).json('Password did not match');
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const forgotPassword = async (req, res, next) => {
+  try {
+    
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (user) {
+      // si existe el usuario, enviamos el email
+      return res.redirect(307,
+        `${process.env.PROTOCOL}/${process.env.HOST}:${process.env.PORT}${process.env.ENDPOINT}/user/sendpassword/${user._id}`
+      );
+    } else {
+      // este usuario no esta en la base datos, le mandamos un 404 y le que no esta registrado
+      return res.status(404).json({message:'User not registered'});
+    }
+  } catch (error) {
+    return next(error);
+  }
+
+}
+
+const changePassword = async (req, res, next) => {
+  const {password, newPassword} = req.body
+  const {id} = req.params
+try {
+  const user = await User.findById(id)
+  if(user)
+  {
+    const oldPass = user.password
+    if(bcrypt.compareSync(password,oldPass))
+    {
+        const userPassUpdated = await User.findByIdAndUpdate(id, {password: bcrypt.hashSync(newPassword, 10)})
+        const userNewPass = await User.findById(id)
+
+        if (bcrypt.compareSync(newPassword, userNewPass.password)) {
+          return res.status(200).json({
+            updatePass: true,
+          });
+        }
+        else
+        {
+          return res.status(404).json('Password not updated')
+        }
+    }
+    else  
+    {
+      return res.status(404).json('Password does not match. Please try again')
+    }
+  }
+  else 
+  {
+    return res.status(404).json('User not found')
+  }
+
+}
+catch (error)
+{
+    return next(error)
+}
+
+}
+
+const sendPassword = async (req, res, next) => {
+
+  try {
+    const {id} = req.params
+    const user = await User.findById(id)
+
+    const email = process.env.EMAIL
+    const password = process.env.PASSWORD_EMAIL
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: email,
+        pass: password
+      }
+    })
+
+    let passwordSecure = randomPassword()
+
+    const mailOptions = {
+      from: email,
+      to: user.email,
+      subject: 'Password recovery',
+      html: `<h1>Recovery password</h1><h2>This is your new password! <span style="color: #ed6d6b;">${passwordSecure}</span><h2>If you didn't request this, please ignore this email.</h2>`,
+    }
+
+    transporter.sendMail(mailOptions, async function (error) {
+
+      if(error)
+        {
+          return res.status(404).json('Mail not sent')
+        }
+        else 
+        {
+          const hashedPass = bcrypt.hashSync(passwordSecure, 10)
+
+          try {
+            const updatedUser = await User.findByIdAndUpdate(id, {password: hashedPass})
+            const userNewPass = await User.findById(id)
+            
+            if (bcrypt.compareSync(passwordSecure, userNewPass.password)) {
+              return res.status(200).json({
+                updateUser: true,
+                sendPass: true
+              });
+            }
+
+          }
+          catch(error)
+          {
+            return res.status(404).json('Password not updated')
+          }
+        }
+
+    })
+  }
+  catch (error) {
+    return next(error)
+  }
+
+}
+
+const update = async (req, res, next) => {
+  let catchImg = req.file?.path;
+  try {
+
+    await User.syncIndexes();
+
+    // NUevo user
+    const patchUser = new User(req.body);
+    
+   
+    // estas cosas no quiero que me cambien por lo cual lo cojo del req.user gracias a que esto es con auth
+    patchUser._id = req.user._id;
+    patchUser.password = req.user.password;
+    patchUser.rol = req.user.rol;
+    patchUser.confirmationCode = req.user.confirmationCode;
+    patchUser.check = req.user.check;
+    patchUser.email = req.user.email;
+
+    // actualizamos en la db con el id y la instancia del modelo de user
+    try {
+    
+      // Cogemos usuario a actualizar
+      const updateUser = await User.findById(req.user._id);
+
+      // Cogemos las keys
+      const updateKeys = Object.keys(req.body);
+
+      // preparamos testeo
+      const testing = [];
+      
+      updateKeys.forEach((item) => {
+        if (updateUser[item] == req.body[item]) {
+          testUpdate.push({
+            [item]: true,
+          });
+        } else {
+          testUpdate.push({
+            [item]: false,
+          });
+        }
+      });
+
+      if (req.file) {
+        updateUser.image == req.file.path
+          ? testUpdate.push({
+              file: true,
+            })
+          : testUpdate.push({
+              file: false,
+            });
+      }
+      return res.status(200).json({
+        testUpdate,
+      });
+    } catch (error) {
+      return res.status(404).json(error.message);
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = { 
     getAllUsers,
     getUserById,
@@ -263,4 +484,9 @@ module.exports = {
     registerUser,
     deleteUser,
     loginUser,
-    resendCode }
+    resendCode,
+    modifyPassword,
+    forgotPassword,
+    sendPassword,
+    changePassword
+ }

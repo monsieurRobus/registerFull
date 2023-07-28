@@ -9,7 +9,6 @@ export const useCheckCodeError = (
     setRes
 ) => {
 
-    console.log(res)
     // 200: User activated
     if(res?.data?.user?.active?.toString() == "true")
         {
@@ -29,7 +28,7 @@ export const useCheckCodeError = (
                 localStorage.setItem("user", customUserString);
             }
         setOk(()=> true)
-        Swal.fire({
+        return Swal.fire({
             icon: "success",
             title: "Ok correct code ✅",
             showConfirmButton: false,

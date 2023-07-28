@@ -12,6 +12,8 @@ import {ConfirmationCode} from './pages/ConfirmationCode/ConfirmationCode.jsx'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx'
 import ProtectedCheckChildren from '../../registerBack/src/ui/ProtectedCheckChildren.jsx'
 import Dashboard from './pages/DashBoard/Dashboard.jsx'
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword.jsx'
+import ChangePassword from './pages/ChangePassword/ChangePassword.jsx'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -22,13 +24,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/" element={<App />}>
           <Route path="/login" element={ <LoginPage /> } />
           <Route path="/register" element={ <RegisterPage /> } />
+          <Route path="/forgotPassword" element={ <ForgotPassword /> } /> 
+          <Route path="/changePassword" element={
+            <ProtectedRoute>            
+              <ChangePassword />
+            </ProtectedRoute>
+          }/>
           <Route path="/verifyCode" element={ 
             <ProtectedCheckChildren>
               <ConfirmationCode />
             </ProtectedCheckChildren> } />
           <Route path="/dashboard" element={ 
             <ProtectedRoute>
-              <h1>Holo</h1>  
+              <Dashboard />
             </ProtectedRoute> 
             } />
         </Route>

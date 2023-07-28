@@ -6,6 +6,12 @@ const UserSchema = new mongoose.Schema({
         required: [true, 'Name is required'],
         minlength: [3, 'Name must be at least 3 characters long']
     },
+    avatar: {
+        type: String,
+        unique: [true, 'Avatar already exists'],
+        default: 'https://api.dicebear.com/6.x/avataaars/svg?seed=gigger%F0%9F%A4%98'
+    },        
+    
     email: {
         type: String,
         required: [true, 'Email is required'],

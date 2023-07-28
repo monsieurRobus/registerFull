@@ -44,7 +44,7 @@ const LoginForm = () => {
         {
             if(res.data.user.active)
             {
-                return <Navigate to="/home" />
+                return <Navigate to="/dashboard" />
             }
             else
             {
