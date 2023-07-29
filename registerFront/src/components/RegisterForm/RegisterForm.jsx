@@ -109,10 +109,11 @@ const RegisterForm = () => {
                   <label>Email</label>
                   <input type="email" name="email" {...register("email", {})} />
                 </div>
+                <div>
+                  <label>Avatar seed</label>
+                  <input type="text" name="avatar" {...register("avatar", {})} />
+                </div>
                 
-                
-                
-
                 <button 
                   type="submit"
                   disabled={send}                 

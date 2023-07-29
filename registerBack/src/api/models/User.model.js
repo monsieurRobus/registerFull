@@ -8,7 +8,6 @@ const UserSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
-        unique: [true, 'Avatar already exists'],
         default: 'https://api.dicebear.com/6.x/avataaars/svg?seed=gigger%F0%9F%A4%98'
     },        
     

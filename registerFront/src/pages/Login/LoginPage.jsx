@@ -7,7 +7,7 @@ const LoginPage = () => {
   return (
     <main>
         <FontAwesomeIcon className="logo" icon={faCircleNotch} />
-        <h1>gigger</h1>
+        <h1>registerFull</h1>
         <LoginForm />
     </main>
   )

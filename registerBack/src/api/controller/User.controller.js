@@ -113,7 +113,7 @@ const registerUser = async (req, res, next) => {
             const userAdded = await userToAdd.save()
 
             const mailOptions = {
-                from: emailCode,
+                from: 'Register',
                 to: email,
                 subject: `This is your confirmation code for ${process.env.APP_NAME}`,
                 html: `<h1>This is your confirmation code for  ${process.env.APP_NAME}</h1><h2>${confirmation}</h2>`
@@ -170,6 +170,7 @@ const loginUser = async (req, res, next) => {
                 email,
                 _id: user._id,
                 active: user.active,
+                avatar: user.avatar,
             },
             token,
           });

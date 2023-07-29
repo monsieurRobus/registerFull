@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import { loginUser } from '../../services/user.service'
 import useLoginError from '../../hooks/useLoginError'
 import { useAuth } from '../../hooks/AuthContext'
+import { set } from 'mongoose'
 
 const LoginForm = () => {
     const [send, setSend] = useState(false)
@@ -14,7 +15,7 @@ const LoginForm = () => {
     const [ok, setOk] = useState(false)
     const { register, handleSubmit, errors } = useForm()
     const navigate = useNavigate()
-    const {setUser} = useAuth()
+    const {userLogin, setUser,user} = useAuth()
     const onFormSubmit = async (values) => {
         const valuesToSend = {
             email: values.username,
@@ -28,22 +29,26 @@ const LoginForm = () => {
 
     }
     
-    useEffect(() => {
-        setUser(()=>null)
-    }, 
-    [])
+  
 
     useEffect(() => {
-
-        useLoginError(res, setOk, setRes, setSend)
-        
+        useLoginError(res, setOk, userLogin, setRes, setSend)        
 
     },[res])
+
+    if(user?.active){
+        return <Navigate to="/dashboard" />
+    }
+    else if (!user?.active && user) 
+    {
+        return <Navigate to="/verifyCode" />
+    }
+    
 
     if(ok)
         {
             if(res.data.user.active)
-            {
+            {                
                 return <Navigate to="/dashboard" />
             }
             else
@@ -51,7 +56,9 @@ const LoginForm = () => {
                 return <Navigate to="/verifyCode" />
             }
         }
-
+        
+        
+    
     const onFormErrors = (errors) => {
 
         const errorFields = document.querySelectorAll(".error")
@@ -95,6 +102,7 @@ const LoginForm = () => {
                     }
                 })} />
             </div>
+            <Link to="/forgotPassword">Forgot Password?</Link>
             
             <button type="submit">Login</button>
            

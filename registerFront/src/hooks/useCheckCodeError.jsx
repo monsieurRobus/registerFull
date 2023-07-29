@@ -41,7 +41,7 @@ export const useCheckCodeError = (
     {
         Swal.fire({
             icon: "error",
-            title: "Interval server error ❎.",
+            title: "Internal server error ❎.",
             text: "user not activated",
             showConfirmButton: false,
             timer: 2500,
