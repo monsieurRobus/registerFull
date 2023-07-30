@@ -16,6 +16,7 @@
     background-color: #ff0011;
     outline: none;
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    transition: all 0.2s ease-in-out;
 }
 
 .input-disabled {
@@ -31,4 +32,9 @@
     background-color: #ffffff;
     outline: none;
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    transition: all 0.2s ease-in-out;
+}
+
+.deleteUser {
+    background-color: coral;
 }

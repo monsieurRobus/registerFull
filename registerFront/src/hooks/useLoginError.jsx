@@ -5,7 +5,7 @@ export const useLoginError = (res, setOk, userLogin, setRes) => {
     {
         localStorage.setItem('user', JSON.stringify(res.data.user))
         localStorage.setItem('token', res.data.token)
-        userLogin(JSON.stringify(res.data.user))
+        userLogin(JSON.stringify(res.data))
         setOk(() => true)
         return Swal.fire({
             icon: "success",
@@ -15,7 +15,6 @@ export const useLoginError = (res, setOk, userLogin, setRes) => {
         })
         
     }
-    console.log(res)
     if(res?.response?.data == "Invalid password")
     {
         console.log(res)

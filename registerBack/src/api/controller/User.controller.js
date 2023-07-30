@@ -105,11 +105,11 @@ const registerUser = async (req, res, next) => {
         })
 
         const confirmation = confirmationCode()
-        const { name, email, password, role } = req.body
+        const { name, email, password, role, avatar } = req.body
         const userExists = await User.findOne({email: email })
-
+        const finalAvatar = `https://api.dicebear.com/6.x/avataaars/svg?seed=${avatar}`
         if (!userExists) {
-            const userToAdd = new User({ name, email, password, role, confirmation })
+            const userToAdd = new User({ name, email, password, role, confirmation, avatar: finalAvatar })
             const userAdded = await userToAdd.save()
 
             const mailOptions = {
@@ -164,15 +164,15 @@ const loginUser = async (req, res, next) => {
           const token = generateToken(user._id, email);
             
           return res.status(200).json({
-            user: {
+            
                 
-                username: user.name,
+                name: user.name,
                 email,
                 _id: user._id,
                 active: user.active,
                 avatar: user.avatar,
-            },
-            token,
+                token: token
+            
           });
         } else {
             return res.status(404).json('Invalid password');
@@ -193,7 +193,8 @@ const activateUser = async (req, res, next) => {
         const { email, confirmationCode } = req.body
 
         const userToActivate = await User.findOne({email: email})
-        delete userToActivate.password
+        if(userToActivate.password)
+          delete userToActivate.password
 
         if(userToActivate)
         {
@@ -431,7 +432,7 @@ const update = async (req, res, next) => {
     patchUser.password = req.user.password;
     patchUser.rol = req.user.rol;
     patchUser.confirmationCode = req.user.confirmationCode;
-    patchUser.check = req.user.check;
+    patchUser.active = req.user.active;
     patchUser.email = req.user.email;
 
     // actualizamos en la db con el id y la instancia del modelo de user
@@ -483,6 +484,7 @@ module.exports = {
     getUserById,
     activateUser,
     registerUser,
+    update,
     deleteUser,
     loginUser,
     resendCode,

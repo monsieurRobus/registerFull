@@ -7,6 +7,12 @@ export const registerUser = async (formData) => {
     .catch((err) => err)
 }
 
+export const deleteUser = async (id) => {
+    return APIuser.delete(`/user/${id}`, token())
+    .then((res) => res)
+    .catch((err) => err)
+}
+
 export const checkCodeConfirmationUser = async (formData) => {
     return APIuser.patch("/user/activate", formData)
       .then((res) => res)
@@ -45,4 +51,15 @@ export const checkCodeConfirmationUser = async (formData) => {
     return APIuser.post("/user/resend", formData)
       .then((res) => res)
       .catch((error) => error);
+  }
+  export const update = async (formData)=> {
+    return APIuser.post("/user/update", formData)
+      .then((res) => res)
+      .catch((error) => error);
+  }
+
+  export const getUserById = async (id) => {
+    return APIuser.get(`/user/${id}`, token())
+    .then((res) => res)
+    .catch((err) => err)
   }

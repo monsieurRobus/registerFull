@@ -25,7 +25,8 @@ const RegisterForm = () => {
       {
         name: values.username,
         password: values.password,
-        email: values.email
+        email: values.email,
+        avatar: values.avatar
       }
     
     setSend(true)
@@ -59,7 +60,7 @@ const RegisterForm = () => {
     }
 
     const handleLogin = () => {
-      navigate("/")
+      navigate("/login")
     }
 
   return (

@@ -62,12 +62,15 @@ useEffect(() => {
 }, [res])
 
 if(ok) {
-  return <Navigate to="/login" />
-}
-  else 
-  {
-    return <Navigate to="/dashboard" />
+  if(!localStorage.getItem('user')){
+    setOk(()=>false)
+    useAutoLogin(allUser, userLogin, setOk)
+    return <Navigate to="/login" />
   }
+  
+    return <Navigate to="/dashboard" />
+  
+}
 
 
 if(reloadPageError){

@@ -20,7 +20,7 @@ export const useCheckCodeError = (
 
                 const customUser = {
                     ...parseCurrentUser,
-                    check: true
+                    active: true
                 }
 
                 const customUserString = JSON.stringify(customUser);

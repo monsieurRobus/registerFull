@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import './HeaderMain.css'
 import { useAuth } from '../../hooks/AuthContext'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
 
@@ -14,7 +14,8 @@ const LoggedNav =({handleLogout,avatar}) => (
             <div className={'navMenu'}>
                 <button onClick={handleLogout}>
                     <FontAwesomeIcon icon={faPowerOff} />
-                </button><img className={'avatar'} src={avatar} alt="user avatar"/>
+                </button>
+                <Link to='/dashboard'><img className={'avatar'} src={avatar} alt="user avatar"/></Link>
             </div>
         </nav>
     </header>

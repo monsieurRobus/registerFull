@@ -34,11 +34,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <ProtectedCheckChildren>
               <ConfirmationCode />
             </ProtectedCheckChildren> } />
-          <Route path="/dashboard" element={ 
+          <Route path="/dashboard">
+            <Route path="" element={ 
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute> 
             } />
+            {/* <Route path="/dashboard/edit/:userId" element={ 
+            <ProtectedRoute>
+              <EditDashboard />
+            </ProtectedRoute> 
+            } /> */}
+          </Route> 
         </Route>
       </Routes>        
       </AuthContextProvider>
