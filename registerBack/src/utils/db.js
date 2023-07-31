@@ -8,10 +8,13 @@ const uri = process.env.CONNECT
     try  {
         const db = await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
         console.log("Connected successfully to database");
+        return db
     }
     catch (e) {
       console.error(e)
     }
   }
 
-  module.exports = { run }
+
+  const db = run()
+  module.exports = { db }

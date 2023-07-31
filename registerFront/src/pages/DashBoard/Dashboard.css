@@ -3,6 +3,10 @@
     height: 256px;
 }
 
+.delete-button {
+    background-color: coral;
+}
+
 .input-active {
     border: 1px solid #000000;
     border-radius: 5px;

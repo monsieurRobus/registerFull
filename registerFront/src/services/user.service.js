@@ -53,13 +53,25 @@ export const checkCodeConfirmationUser = async (formData) => {
       .catch((error) => error);
   }
   export const update = async (formData)=> {
-    return APIuser.post("/user/update", formData)
+    return APIuser.post("/user/update", formData,    {headers: {
+      Authorization: `Bearer ${token()}`,
+      }})
       .then((res) => res)
       .catch((error) => error);
   }
 
   export const getUserById = async (id) => {
     return APIuser.get(`/user/${id}`, token())
+    .then((res) => res)
+    .catch((err) => err)
+  }
+  export const getAllUsers = async (id) => {
+    return APIuser.get(`/user`, token())
+    .then((res) => res)
+    .catch((err) => err)
+  }
+  export const getAllUsersPaginated = async (page) => {
+    return APIuser.get(`/user/page/${page}`, token())
     .then((res) => res)
     .catch((err) => err)
   }

@@ -21,21 +21,25 @@ const Dashboard = () => {
   const handleChangePassword = () => {
     return navigate('/changePassword');
   }
+   
   
-  
-  
-  const sendEditedProfile = async() => {
+  const sendEditedProfile = async(id,formData) => {
 
+    const valuesToSend = {
+      name: formData.name,
+      avatar: formData.avatar
+    }
+    console.log("UPDATEATE MALDITO")
     setSend(true)
-    setRes(await update(id))
+    setRes(await update(valuesToSend))
     setSend(false)
 
 
   }
 
-  const handleEditProfile = () => {
+  const handleEditProfile = (formData) => {
 
-    navigate(`/dashboard/edit/${user._id}`)
+    edit ? sendEditedProfile(user._id,formData) : setEdit(!edit)
 
   }
 
@@ -70,42 +74,42 @@ const Dashboard = () => {
   useEffect(() => {
   },[user])
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    useDeleteUserError(res, setRes, setDeleteOk)
+  //   useDeleteUserError(res, setRes, setDeleteOk)
 
-  },[res])
-
-  
-
+  // },[res])
 
   if(deleteOk) {
     logout()
     userLogin(null)
     localStorage.removeItem('user')
-    localStorage.removeItem('token')
     
     return <Navigate to="/login" />
   }
 
   return (
     <section>
-        <div>
-          <label>username:</label>
-          <input className={classInput} type="text" name="Name" disabled={!edit} placeholder={user?.name} {...register("name", {})}/>
-          <label>email:</label>
-          <span>{user?.email}</span>
-          <button onClick={handleChangePassword}>Change Password</button>
-        </div>
-        <div>
-          <img className={"avatar-dashboard"} src={user?.avatar}/>
-          <label>avatar:</label>
-          <input className={classInput} type="text" name="avatar" disabled={!edit} placeholder={user?.avatar} {...register("avatar", {})}/>
-          <label>Role:</label>
-          <input className={classInput} type="email" name="email" disabled={!edit} placeholder={user?.role}/>
-          <button onClick={handleEditProfile} disabled>Edit Profile</button>
+      <form onSubmit={handleSubmit(handleEditProfile)}>
+          <div>
           
-        </div>
+            <label>username:</label>
+            <input className={classInput} type="text" name="Name" disabled={!edit} placeholder={user?.name} {...register("name")}/>
+            <label>email:</label>
+            <span>{user?.email}</span>
+            <button onClick={handleChangePassword}>Change Password</button>
+          </div>
+          <div>
+            <img className={"avatar-dashboard"} src={user?.avatar}/>
+            <label>avatar:</label>
+            <input className={classInput} type="text" name="avatar" disabled={!edit} placeholder={user?.avatar} {...register("avatar")}/>
+            <label>Role:</label>
+            <input className={classInput} type="email" name="email" disabled={!edit} placeholder={user?.role}/>
+            <button onClick={handleEditProfile} >{edit ? 'Save Profile':'Edit Profile'}</button>
+            {/* <button onClick={handleDeleteUser} className={'delete-button'} disabled={!edit}>Delete User</button>           */}
+            
+          </div>
+        </form>
     </section>
   )
 }

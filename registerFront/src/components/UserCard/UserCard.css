@@ -1,0 +1,26 @@
+.user-card {
+    display: flex;
+    width: 200px;
+    height: 200x;    
+    flex-direction: row;
+    gap:1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.user-card h2 {
+    font-size: 1.3rem;
+    text-align: center;
+    color: #4d4d4d;
+}
+
+.user-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}

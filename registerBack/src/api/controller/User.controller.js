@@ -1,9 +1,11 @@
 const User = require('../models/User.model')
+const mongoose = require('mongoose')
 const { confirmationCode } = require('../../utils/confirmationCode')
-const { generateToken } = require('../../utils/token')
+const { generateToken, verifyToken } = require('../../utils/token')
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const randomPassword = require('../../utils/randomPassword')
+
 const PORT = process.env.PORT || 3000
 const ENDPOINT = process.env.ENDPOINT || `http://localhost:${PORT}`
 const EMAIL = process.env.EMAIL || ''
@@ -15,7 +17,12 @@ const PROTOCOL = process.env.PROTOCOL || 'http://'
 const getAllUsers = async (req, res, next) => {
 
     try {
-            
+
+        const countUsers = await mongoose.connection.db.collection('users').countDocuments()        
+        console.log(countUsers)
+        const {authorization} = req.headers
+        const token = authorization.split(' ')[1]
+        const decoded = verifyToken(token)
         const users = await User.find()
         return res.status(200).json({ message: 'Users found', users: users })
     
@@ -24,6 +31,27 @@ const getAllUsers = async (req, res, next) => {
     {
         return next(error)
     }
+
+}
+
+const getAllUsersPaginated = async (req, res, next) => {
+
+  try{
+      
+      const { pageReq } = req.params
+      const page = parseInt(pageReq)
+      const limit = 6
+      const skip = (page - 1) * limit
+      const countUsers = await mongoose.connection.db.collection('users').countDocuments()
+      const totalPages = Math.ceil(countUsers / limit)
+      const users = await User.find().skip(skip).limit(limit)
+      return res.status(200).json({ message: 'Users found', users: users, totalPages: totalPages, currentPage: page, limit })
+
+  }
+  catch(error)
+  {
+    return next(error)
+  }
 
 }
 
@@ -151,9 +179,8 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-  
+      
       const user = await User.findOne({ email })
-
       if (!user) {
         return res.status(404).json('User not found')
         
@@ -169,6 +196,7 @@ const loginUser = async (req, res, next) => {
                 name: user.name,
                 email,
                 _id: user._id,
+                role: user.role,
                 active: user.active,
                 avatar: user.avatar,
                 token: token
@@ -418,59 +446,32 @@ const sendPassword = async (req, res, next) => {
 }
 
 const update = async (req, res, next) => {
-  let catchImg = req.file?.path;
+  
   try {
 
     await User.syncIndexes();
 
-    // NUevo user
-    const patchUser = new User(req.body);
-    
-   
-    // estas cosas no quiero que me cambien por lo cual lo cojo del req.user gracias a que esto es con auth
-    patchUser._id = req.user._id;
-    patchUser.password = req.user.password;
-    patchUser.rol = req.user.rol;
-    patchUser.confirmationCode = req.user.confirmationCode;
-    patchUser.active = req.user.active;
-    patchUser.email = req.user.email;
-
-    // actualizamos en la db con el id y la instancia del modelo de user
     try {
-    
-      // Cogemos usuario a actualizar
-      const updateUser = await User.findById(req.user._id);
+      
+      const updateUser = await User.findByIdAndUpdate(req.user?.id, {...req.body})
 
-      // Cogemos las keys
       const updateKeys = Object.keys(req.body);
 
-      // preparamos testeo
       const testing = [];
       
-      updateKeys.forEach((item) => {
-        if (updateUser[item] == req.body[item]) {
-          testUpdate.push({
-            [item]: true,
-          });
-        } else {
-          testUpdate.push({
-            [item]: false,
-          });
-        }
-      });
+      // updateKeys.forEach((item) => {
+      //   if (updateUser[item] == req.body[item]) {
+      //     testUpdate.push({
+      //       [item]: true,
+      //     });
+      //   } else {
+      //     testUpdate.push({
+      //       [item]: false,
+      //     });
+      //   }
+      // });
 
-      if (req.file) {
-        updateUser.image == req.file.path
-          ? testUpdate.push({
-              file: true,
-            })
-          : testUpdate.push({
-              file: false,
-            });
-      }
-      return res.status(200).json({
-        testUpdate,
-      });
+      return res.status(200).json('oki uwu');
     } catch (error) {
       return res.status(404).json(error.message);
     }
@@ -481,6 +482,7 @@ const update = async (req, res, next) => {
 
 module.exports = { 
     getAllUsers,
+    getAllUsersPaginated,
     getUserById,
     activateUser,
     registerUser,

@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react'
 import './HeaderMain.css'
 import { useAuth } from '../../hooks/AuthContext'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Navigate, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
+
+const classActivePending = (isActive,isPending) => {
+    return isActive ? 'active' : isPending ? 'pending' : ''
+}
 
 const LoggedNav =({handleLogout,avatar}) => (
     <header className={'main'}>
@@ -12,6 +16,7 @@ const LoggedNav =({handleLogout,avatar}) => (
                 <span>RegisterFull</span>
             </div>     
             <div className={'navMenu'}>
+            <NavLink to='/user' className={classActivePending}>Users</NavLink>
                 <button onClick={handleLogout}>
                     <FontAwesomeIcon icon={faPowerOff} />
                 </button>

@@ -14,6 +14,7 @@ import ProtectedCheckChildren from '../../registerBack/src/ui/ProtectedCheckChil
 import Dashboard from './pages/DashBoard/Dashboard.jsx'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword.jsx'
 import ChangePassword from './pages/ChangePassword/ChangePassword.jsx'
+import UserList from './pages/UserList/UserList.jsx'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -25,6 +26,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/login" element={ <LoginPage /> } />
           <Route path="/register" element={ <RegisterPage /> } />
           <Route path="/forgotPassword" element={ <ForgotPassword /> } /> 
+          <Route path="/user/:pageReq" element={ <UserList /> } /> 
+          <Route path="/user" element={ <UserList /> } /> 
           <Route path="/changePassword" element={
             <ProtectedRoute>            
               <ChangePassword />
@@ -40,11 +43,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Dashboard />
             </ProtectedRoute> 
             } />
-            {/* <Route path="/dashboard/edit/:userId" element={ 
+            <Route path="/dashboard/edit/:userId" element={ 
             <ProtectedRoute>
-              <EditDashboard />
+              <Dashboard />
             </ProtectedRoute> 
-            } /> */}
+            } />
           </Route> 
         </Route>
       </Routes>        
